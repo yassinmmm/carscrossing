@@ -10,5 +10,9 @@ package carscrossing;
  */
 public class Car {
 
-public boolean exists = false;
+public boolean exists = true;
+
+    public boolean isExists() {
+        return exists;
+    }
 }

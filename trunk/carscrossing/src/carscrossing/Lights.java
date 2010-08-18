@@ -13,16 +13,16 @@ package carscrossing;
 
 public class Lights {
 // Lights only need one attribute for cars to act apon.
-    boolean go;
+    boolean green=false;
     
     
     // Method to set objects state.
     void setGo (boolean value) {
-        go = value;
+        green = value;
     }
 
     //Method to get objects state.
     boolean getGo (){
-        return go;
+        return green;
     }
 }
