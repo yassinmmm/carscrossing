@@ -96,31 +96,26 @@ public class Lane {
 
                         Cars[y + 1] = Cars[y];
                         Cars[y] = null;
-
                     }
 
                     // Overtaking exception only nessesary before lights as cars
                     // are assumed to have uniform speed before an after lights.
 
+                    // check for next lane to move into
                     if (Lanes[x].getFlow() == Lanes[x + 1].getFlow()) {
 
+                        // I decided from the check to both the same position
+                        // and the next possition in the transition lane to
+                        // simulate a realistic occurance.
                         if (((Lanes[x + 1].Cars[y]) != null) && (Lanes[x + 1].Cars[y + 1]) != null) {
 
                             Lanes[x + 1].Cars[y + 1] = Cars[y];
+                            Cars[y]=null;
                         }
-
-
-
-
-
-
                     }
                 }
-
             }
-
         }
-
     }
 
     void bingCar() {
@@ -130,6 +125,91 @@ public class Lane {
             Cars[0] = new Car();
         }
     }
+
+
+    public static String screenOut(Lane[] Lanes, int value) {
+
+        // this is going to be huge....challenge time :D
+        String buildStringOut = "";
+        String leftV = "          |";
+        String rightV = "|          ";
+
+
+        // Need to construct each line individually stating with top-half
+        // of vertical lanes.
+        for (int y = value + 19; y == value + 9; --y) {
+
+            buildStringOut += leftV;
+
+            for (int x = 0; x < Lanes.length; ++x) {
+
+                if (Lanes[x].getFlow() == 1) {
+
+                    if (Lanes[x].Cars[y] != null) {
+
+                        buildStringOut += "C";
+                    } else {
+                        buildStringOut += " ";
+                    }
+
+                } // Because the construcion of Lanes[] consists of vertical lanes
+                // then horizontal, i am able to do this.
+                else {
+                    buildStringOut += rightV;
+                    break;
+                }
+            }
+        }
+        // begin building of horizontal lanes
+        // need to add "--------|--|-----------"
+
+        // horizontal lanes construction
+        // loop cycle lanes[]
+        for (int x = 0; x < Lanes.length; ++x) {
+
+            // check for direction of lane
+            if (Lanes[x].getFlow() == 3) {
+
+                // loop through cars array of horizontal lane
+                for (int y = 0; y < (Lanes[x].Cars.length); ++y) {
+
+                    // check for car
+                    if (Lanes[x].Cars[y] != null) {
+
+                        buildStringOut += "C";
+
+                    } else {
+                        buildStringOut += " ";
+                    }
+                }
+            }
+        }
+
+        // need to add "--------|--|-----------"
+
+        //bottom half of vertical construction
+        for (int y = 9; y > -1; --y) {
+
+            // could be made into a function
+            buildStringOut += leftV;
+
+            for (int x = 0; x < Lanes.length; ++x) {
+
+                if (Lanes[x].getFlow() == 1) {
+
+                    if (Lanes[x].Cars[y] != null) {
+
+                        buildStringOut += "C";
+                    } else {
+                        buildStringOut += " ";
+
+                    }
+                }
+            }
+        }
+        return buildStringOut;
+    }
+
 
     public static void main(String[] args) {
 
@@ -141,7 +221,6 @@ public class Lane {
         int totalLanes = 0;
         boolean pressFive = false;
         Lane[] Lanes = null;
-
 
         while (menuSelect != 7) {
 
@@ -159,20 +238,11 @@ public class Lane {
             Scanner keyboard = new Scanner(System.in);
             menuSelect = keyboard.nextInt();
 
-
-
-
-
-
             if (menuSelect == 1) {
                 // Get number of horizontal streets as H_street from user.
                 System.out.println("Please enter number of horizontal lanes: ");
                 H_street = keyboard.nextInt();
                 pressFive = false;
-
-
-
-
             }
 
             if (menuSelect == 2) {
@@ -180,10 +250,6 @@ public class Lane {
                 System.out.println("Please enter number of vertical lanes: ");
                 V_street = keyboard.nextInt();
                 pressFive = false;
-
-
-
-
             }
 
             if (menuSelect == 3) {
@@ -193,10 +259,6 @@ public class Lane {
                         + "a horizontal street [min 0, max 1]: ");
                 chanceCarH_street = keyboard.nextFloat();
                 pressFive = false;
-
-
-
-
             }
 
             if (menuSelect == 4) {
@@ -206,10 +268,6 @@ public class Lane {
                         + "a vertical street [min 0, max 1]: ");
                 chanceCarV_street = keyboard.nextFloat();
                 pressFive = false;
-
-
-
-
             }
             if (menuSelect == 5) {// or menuSelect==6~~if menuselect... {
                 // I assume that one cycle refers to a small point in time
@@ -218,17 +276,9 @@ public class Lane {
                 if (pressFive == false) {
                     totalLanes = (H_street + V_street);
                     Lanes = new Lane[totalLanes];
-
-
-
-
                     int laneCount = 1;
 
-
-
-
-
-                    for (int x = 0; x< V_street; ++x) {
+                    for (int x = 0; x < V_street; ++x) {
                         String i = "V_street" + Integer.toString(laneCount);
                         Lanes[x] = new Lane();
                         Lanes[x].setName(i);
@@ -240,7 +290,7 @@ public class Lane {
 
                     laneCount = 1;
 
-                    for (int x = V_street; x< totalLanes; ++x) {
+                    for (int x = V_street; x < totalLanes; ++x) {
                         String i = "H_street" + Integer.toString(laneCount);
                         Lanes[x] = new Lane();
                         Lanes[x].setName(i);
@@ -250,22 +300,15 @@ public class Lane {
                         laneCount += 1;
                     }
                     pressFive = true;
-
-
-
-
                 }
                 // now it kows if it needs to build and does it, next -> moving
                 // First stage is to move all existing cars second is to create
-                // New cars in lanes.
+                // new cars in lanes.
 
                 for (int x = 0; x < totalLanes; ++x) {
 
                     Lanes[x].moveCars(Lanes, x);
                     Lanes[x].bingCar();
-                    String toScreen = screenOut(Lanes, H_street);
-
-
                 }
 
                 // Screenout here
@@ -273,57 +316,7 @@ public class Lane {
             }
         }
     }
-
-    public static String screenOut(Lane[] Lanes, int value) {
-
-        // this is going to be huge....challenge time :DS
-        String buildOut = "";
-        String leftV = "          |";
-        String rightV = "|          ";
-
-
-        // Need to construct each line individually stating with top-half
-        // of vertical lanes.
-        for (int y = value + 19; y == value + 9; --y) {
-
-            buildOut += leftV;
-
-            for (int x = 0; x < Lanes.length; ++x) {
-
-                if (Lanes[x].getFlow() == 1) {
-
-                    if (Lanes[x].Cars[y] != null) {
-
-                        buildOut += "C";
-                    } else {
-                        buildOut += " ";
-
-
-                    }
-
-
-                }
-                // Because the construcion of Lanes[] consists of vertical lanes
-                // then horizontal, i am able to do this.
-                else {
-                    buildOut += rightV;
-                    break;
-                }
-
-            }
-
-
-        }
-        // begin building of horizontal lanes
-
-
-
-        return buildOut;
-    }
 }
-
-
-
 // This code can be used later for the input of direction
 // of a particualer lane.
 /*
