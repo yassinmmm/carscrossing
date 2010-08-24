@@ -46,7 +46,7 @@ public class Lane {
         carProb = value;
     }
 
-    void setFlow(int value) {
+    void setFlow(int x,int value) {
         if (value == 3) {
             stopOrGo.setGo(true);
         }
@@ -110,7 +110,7 @@ public class Lane {
                         if (((Lanes[x + 1].Cars[y]) != null) && (Lanes[x + 1].Cars[y + 1]) != null) {
 
                             Lanes[x + 1].Cars[y + 1] = Cars[y];
-                            Cars[y]=null;
+                            Cars[y] = null;
                         }
                     }
                 }
@@ -126,18 +126,17 @@ public class Lane {
         }
     }
 
-
     public static String screenOut(Lane[] Lanes, int value) {
 
         // this is going to be huge....challenge time :D
         String buildStringOut = "";
         String leftV = "          |";
-        String rightV = "|          ";
+        String rightV = "|          \n";
 
 
         // Need to construct each line individually stating with top-half
         // of vertical lanes.
-        for (int y = value + 19; y == value + 9; --y) {
+        for (int y = value + 19; y > value + 9; --y) {
 
             buildStringOut += leftV;
 
@@ -156,12 +155,12 @@ public class Lane {
                 // then horizontal, i am able to do this.
                 else {
                     buildStringOut += rightV;
-                    break;
                 }
+                break;
             }
         }
         // begin building of horizontal lanes
-        // need to add "--------|--|-----------"
+        buildStringOut += "---------|  |----------\n";
 
         // horizontal lanes construction
         // loop cycle lanes[]
@@ -170,13 +169,41 @@ public class Lane {
             // check for direction of lane
             if (Lanes[x].getFlow() == 3) {
 
-                // loop through cars array of horizontal lane
-                for (int y = 0; y < (Lanes[x].Cars.length); ++y) {
+                // loop through cars array of horizontal lane up to lights
+                for (int y = 0; y < 9; ++y) {
 
                     // check for car
                     if (Lanes[x].Cars[y] != null) {
 
-                        buildStringOut += "C";
+                        buildStringOut += "c";
+
+                    } else {
+                        buildStringOut += " ";
+                    }
+                }
+
+                // Lights output for horizontal
+                for (int z = 0; z < Lanes.length; ++z) {
+
+                    if (Lanes[z].getFlow() == 3) {
+
+                        if (Lanes[z].stopOrGo.getGo() == false) {
+
+                            buildStringOut += "-";
+
+                        } else {
+                            buildStringOut += " ";
+                        }
+                    }
+                }
+
+                // Horizontal lane after lights
+                for (int y = 10; y < Lanes[x].Cars.length; ++y) {
+
+                    // check for car
+                    if (Lanes[x].Cars[y] != null) {
+
+                        buildStringOut += "c";
 
                     } else {
                         buildStringOut += " ";
@@ -185,7 +212,26 @@ public class Lane {
             }
         }
 
-        // need to add "--------|--|-----------"
+        // build concatanation of bottom of horizontal lanes
+        // with lights included
+
+        buildStringOut += "----------|\n";
+
+        for (int x = 0; x < Lanes.length; ++x) {
+
+            if (Lanes[x].getFlow() == 1) {
+
+                if (Lanes[x].stopOrGo.getGo() == false) {
+
+                    buildStringOut += "-";
+
+                } else {
+                    buildStringOut += " ";
+                }
+            }
+        }
+
+        buildStringOut += "|----------\n";
 
         //bottom half of vertical construction
         for (int y = 9; y > -1; --y) {
@@ -210,9 +256,9 @@ public class Lane {
         return buildStringOut;
     }
 
-
     public static void main(String[] args) {
 
+        String Catch = "";
         int menuSelect = 0;
         int H_street = 1;
         int V_street = 1;
@@ -236,7 +282,20 @@ public class Lane {
 
 
             Scanner keyboard = new Scanner(System.in);
-            menuSelect = keyboard.nextInt();
+            Catch = keyboard.next();
+
+            try {
+                menuSelect = Integer.parseInt(Catch);
+            } catch (Exception e) {
+                menuSelect = 0;
+
+            }
+
+            if (menuSelect == 0) {
+                System.out.println("Please enter a valid input value");
+
+            }
+
 
             if (menuSelect == 1) {
                 // Get number of horizontal streets as H_street from user.
@@ -253,21 +312,48 @@ public class Lane {
             }
 
             if (menuSelect == 3) {
-                // Get value for random calculation from user.
-                System.out.println("Please enter a value for the"
-                        + "Probability of a car entering "
-                        + "a horizontal street [min 0, max 1]: ");
-                chanceCarH_street = keyboard.nextFloat();
-                pressFive = false;
+
+                while (menuSelect == 3) {
+
+                    // Get value for random calculation from user.
+                    System.out.println("Please enter a value for the"
+                            + "Probability of a car entering "
+                            + "a horizontal street [min 0, max 1]: ");
+
+                    Catch = keyboard.next();
+                    try {
+                        chanceCarH_street = Double.parseDouble(Catch);
+                    } catch (Exception e) {
+                        chanceCarH_street = 2;
+                    }
+                    if ((chanceCarH_street > 0) && (chanceCarH_street < 1)) {
+                        pressFive = false;
+                        break;
+                    }
+                    System.out.println("Please enter a valid input value");
+                }
             }
 
             if (menuSelect == 4) {
-                // Get value for random calculation from user.
-                System.out.println("Please enter a value for the"
-                        + "Probability of a car entering "
-                        + "a vertical street [min 0, max 1]: ");
-                chanceCarV_street = keyboard.nextFloat();
-                pressFive = false;
+
+                while (menuSelect == 4) {
+                    // Get value for random calculation from user.
+                    System.out.println("Please enter a value for the"
+                            + "Probability of a car entering "
+                            + "a vertical street [min 0, max 1]: ");
+                    Catch = keyboard.next();
+
+                    try {
+                        chanceCarV_street = Double.parseDouble(Catch);
+                    } catch (Exception e) {
+                        chanceCarV_street = 2;
+                    }
+                    if ((chanceCarV_street > 0) && (chanceCarV_street < 1)) {
+                        pressFive = false;
+                        break;
+                    }
+                    System.out.println("Please enter a valid input value");
+                }
             }
             if (menuSelect == 5) {// or menuSelect==6~~if menuselect... {
                 // I assume that one cycle refers to a small point in time
@@ -317,6 +403,10 @@ public class Lane {
         }
     }
 }
+
+
+
+
 // This code can be used later for the input of direction
 // of a particualer lane.
 /*
