@@ -74,10 +74,10 @@ public class Lane {
         }
 
         // All cars before lights will need follow different rules
-        if (Lanes[x].stopOrGo.getGo()) {
+        if (stopOrGo.getGo()) {
 
             // The lights are green go as normal
-            for (int y = 9; y >= 0; --y) {
+            for (int y = 9; y >= 0; y--) {
 
                 if (Cars[y] != null) {
                     Cars[y + 1] = Cars[y];
@@ -87,11 +87,11 @@ public class Lane {
         } else {
             // for the following for loop i start the count at 8 thus unsuring
             // that a cascade of stopping will occur at the lights
-            for (int y = 8; y >= 0; --y) {
+            for (int y = 8; y > -1; y--) {
 
                 if (Cars[y] != null) {
 
-                    if (Cars[y + 1] != null) {
+                    if (Cars[y + 1] == null) {
 
                         Cars[y + 1] = Cars[y];
                         Cars[y] = null;
@@ -106,10 +106,24 @@ public class Lane {
                         // I decided from the check to both the same position
                         // and the next possition in the transition lane to
                         // simulate a realistic occurance.
-                        if (((Lanes[x + 1].Cars[y]) != null) && (Lanes[x + 1].Cars[y + 1]) != null) {
+                        if (((Lanes[x + 1].Cars[y]) == null) && (Lanes[x + 1].Cars[y + 1]) == null) {
 
                             Lanes[x + 1].Cars[y + 1] = Cars[y];
                             Cars[y] = null;
+                        }
+                    }
+
+                    // While a real driver would would opt to be in the
+                    // lane closer to a street they are turning into this
+                    // simulation just opts for a closer spot to the lights
+
+
+                    if ((x != 0) && (Lanes[x].getFlow() == Lanes[x - 1].getFlow())) {
+                        if (((Lanes[x - 1].Cars[y]) == null) && (Lanes[x - 1].Cars[y + 1]) == null) {
+
+                            Lanes[x - 1].Cars[y + 1] = Cars[y];
+                            Cars[y] = null;
+
                         }
                     }
                 }
@@ -128,7 +142,7 @@ public class Lane {
         }
     }
 
-    public static String screenOut(Lane[] Lanes, int value) {
+    public static String screenOut(Lane[] Lanes, int vValue, int hValue) {
 
 
         // this is going to be huge....challenge time :D
@@ -139,7 +153,7 @@ public class Lane {
 
         // Need to construct each line individually stating with top-half
         // of vertical lanes.
-        for (int y = value + 19; y > value + 9; y--) {
+        for (int y = hValue + 19; y > hValue + 9; y--) {
 
             buildStringOut += leftV;
 
@@ -158,8 +172,16 @@ public class Lane {
             buildStringOut += rightV;
         }
 
-        // top of horizontal lanes has no lights
-        buildStringOut += "---------|  |----------\n";
+        // top of horizontal lanes has no lights as is only one way
+        buildStringOut += "----------|";
+
+        // i couldn't find a more efficient way for this...
+        for (int k = 0; k < vValue; k++) {
+
+            buildStringOut += " ";
+        }
+
+        buildStringOut += "|----------\n";
         // horizontal lanes construction
         // loop cycle lanes[]
         for (int x = 0; x < Lanes.length; x++) {
@@ -168,7 +190,7 @@ public class Lane {
             if (Lanes[x].getFlow() == 3) {
 
                 // loop through cars array of horizontal lane up to lights
-                for (int y = 0; y < 9; y++) {
+                for (int y = 0; y < 10; y++) {
 
                     // check for car
                     if (Lanes[x].Cars[y] != null) {
@@ -181,22 +203,15 @@ public class Lane {
                 }
 
                 // Lights output for horizontal
-                for (int z = 0; z < Lanes.length; z++) {
 
-                    if (Lanes[z].getFlow() == 3) {
+                if (Lanes[x].stopOrGo.getGo()) {
 
-                        if (Lanes[z].stopOrGo.getGo() == false) {
-
-                            buildStringOut += "-";
-
-                        } else {
-                            buildStringOut += " ";
-                        }
-                    }
+                    buildStringOut += " ";
+                } else {
+                    buildStringOut += "|";
                 }
 
-                // Horizontal lane after lights
-                for (int y = 10; y < Lanes[x].Cars.length; y++) {
+                for (int y = (10); y < 10 + vValue; y++) {
 
                     // check for car
                     if (Lanes[x].Cars[y] != null) {
@@ -207,11 +222,28 @@ public class Lane {
                         buildStringOut += " ";
                     }
                 }
+
+                // next line is need to represent possible input of lights
+                // for opposite direction
+                buildStringOut += " ";
+                // Horizontal lane after lights
+                for (int y = (10 + vValue); y < Lanes[x].Cars.length; y++) {
+
+                    // check for car
+                    if (Lanes[x].Cars[y] != null) {
+
+                        buildStringOut += "c";
+
+                    } else {
+                        buildStringOut += " ";
+                    }
+                }
+                buildStringOut += "\n";
             }
         }
         // build concatanation of bottom of horizontal lanes
         // with lights included
-        buildStringOut += "----------|\n";
+        buildStringOut += "----------|";
         for (int x = 0; x < Lanes.length; x++) {
 
             if (Lanes[x].getFlow() == 1) {
@@ -226,6 +258,8 @@ public class Lane {
             }
         }
         buildStringOut += "|----------\n";
+
+
         //bottom half of vertical construction
         for (int y = 9; y > -1; y--) {
 
@@ -372,7 +406,7 @@ public class Lane {
                     System.out.println("Please enter a valid input value");
                 }
             }
-            if (menuSelect == 5) {// or menuSelect==6~~if menuselect... {
+            if ((menuSelect == 5) || (menuSelect == 6)) {
                 // I assume that one cycle refers to a small point in time
                 // in wich a car can be generated by a lane or
                 // move to the next available position
@@ -405,41 +439,56 @@ public class Lane {
                     }
                     pressFive = true;
                 }
-                // now it kows if it needs to build and does it, next -> moving
-                // First stage is to move all existing cars second is to create
-                // new cars in lanes.
 
-                for (int x = 0; x < totalLanes; x++) {
+                int cycleCount = 1;
 
+                if (menuSelect == 6) {
 
-                    System.out.println(Lanes[x].getName());
-                    System.out.println(Lanes[x].Cars.length);
+                    while (menuSelect == 6) {
 
-                    for (int y = 0; y < Lanes[x].Cars.length; y++) {
+                        System.out.println("Please enter number of cycles for simulation [min 1, max 10]: ");
+                        Catch = keyboard.next();
 
-                        if (Lanes[x].Cars[y] != null) {
-
-                            System.out.println(Lanes[x].Cars[y].isExists());
-
+                        try {
+                            cycleCount = Integer.parseInt(Catch);
+                        } catch (Exception e) {
+                            cycleCount = 11;
                         }
-
-
-
+                        if ((cycleCount > 0) && (cycleCount < 11)) {
+                            break;
+                        }
+                        System.out.println("Please enter a valid input value");
                     }
 
-
-
-
-
-
-
-                    Lanes[x].moveCars(Lanes, x);
-                    Lanes[x].bingCar();
-
-
                 }
-            } // Screenout here
-            System.out.println(screenOut(Lanes, H_street));
+
+                for (int cyc = 0; cyc < cycleCount; cyc++) {
+
+                    // now it kows if it needs to build and does it, next -> moving
+                    // First stage is to move all existing cars second is to create
+                    // new cars in lanes.
+
+                    for (int x = 0; x < totalLanes; x++) {
+
+
+//                    System.out.println(Lanes[x].getName());
+//                    System.out.println(Lanes[x].Cars.length);
+//
+//                    for (int y = 0; y < Lanes[x].Cars.length; y++) {
+//
+//                        if (Lanes[x].Cars[y] != null) {
+//
+//                            System.out.println(Lanes[x].Cars[y].isExists());
+//
+//                        }
+//                    }
+                        Lanes[x].moveCars(Lanes, x);
+                        Lanes[x].bingCar();
+                    }
+
+                    System.out.println(screenOut(Lanes, V_street, H_street));
+                }
+            }
         }
     }
 }
