@@ -32,9 +32,10 @@ public class Lane {
         return length;
     }
 
-    void setLength(int value) {
+    void setLength(int value, int delay) {
         length = value;
         Cars = new Car[value];
+        stopOrGo.setAmberDelay(delay);
     }
 
     double getCarProb() {
@@ -46,14 +47,23 @@ public class Lane {
     }
 
     void setFlow(int value) {
-        if (value == 3) {
-            stopOrGo.setGo(true);
+        if (value == 1) {
+            stopOrGo.setGreen(true);
         }
         flow = value;
     }
 
     int getFlow() {
         return flow;
+    }
+
+    void changeLights() {
+
+        if (stopOrGo.getGreen() == true) {
+            stopOrGo.setGreen(false);
+        } else {
+            stopOrGo.resetDelayCount();
+        }
     }
 
     void moveCars(Lane[] Lanes, int x) {
@@ -74,7 +84,7 @@ public class Lane {
         }
 
         // All cars before lights will need follow different rules
-        if (stopOrGo.getGo()) {
+        if (stopOrGo.getGreen()) {
 
             // The lights are green go as normal
             for (int y = 9; y >= 0; y--) {
@@ -101,7 +111,7 @@ public class Lane {
                     // are assumed to have uniform speed before an after lights.
 
                     // check for next lane to move into
-                    if (Lanes[x].getFlow() == Lanes[x + 1].getFlow()) {
+                    if ((x != (Lanes.length - 1)) && (getFlow() == Lanes[x + 1].getFlow())) {
 
                         // I decided from the check to both the same position
                         // and the next possition in the transition lane to
@@ -149,6 +159,7 @@ public class Lane {
         String buildStringOut = "";
         String leftV = "          |";
         String rightV = "|          \n";
+        int vCrossCount = hValue;
 
 
         // Need to construct each line individually stating with top-half
@@ -202,27 +213,47 @@ public class Lane {
                     }
                 }
 
-                // Lights output for horizontal
 
-                if (Lanes[x].stopOrGo.getGo()) {
+                // Lights output for horizontal after lights if green
+
+                if (Lanes[x].stopOrGo.getGreen()) {
 
                     buildStringOut += " ";
-                } else {
-                    buildStringOut += "|";
-                }
 
-                for (int y = (10); y < 10 + vValue; y++) {
+                    for (int y = 10; y < 10 + vValue; y++) {
 
-                    // check for car
-                    if (Lanes[x].Cars[y] != null) {
+                        // check for car
+                        if (Lanes[x].Cars[y] != null) {
 
-                        buildStringOut += "c";
+                            buildStringOut += "c";
 
-                    } else {
-                        buildStringOut += " ";
+                        } else {
+                            buildStringOut += " ";
+                        }
                     }
+
                 }
 
+                // lights output for horizontal after lights if red
+
+                if (!Lanes[x].stopOrGo.getGreen()) {
+                    buildStringOut += "|";
+
+                    for (int v = 0; v < Lanes.length; v++) {
+
+                        if (Lanes[v].getFlow() == 1) {
+
+                            if (Lanes[v].Cars[9 + vCrossCount] != null) {
+
+                                buildStringOut += "C";
+
+                            } else {
+                                buildStringOut += " ";
+                            }
+                        }
+                    }
+
+                }
                 // next line is need to represent possible input of lights
                 // for opposite direction
                 buildStringOut += " ";
@@ -239,6 +270,7 @@ public class Lane {
                     }
                 }
                 buildStringOut += "\n";
+                vCrossCount -= 1;
             }
         }
         // build concatanation of bottom of horizontal lanes
@@ -248,7 +280,7 @@ public class Lane {
 
             if (Lanes[x].getFlow() == 1) {
 
-                if (Lanes[x].stopOrGo.getGo() == false) {
+                if (Lanes[x].stopOrGo.getGreen() == false) {
 
                     buildStringOut += "-";
 
@@ -296,6 +328,7 @@ public class Lane {
         int totalLanes = 0;
         boolean pressFive = false;
         Lane[] Lanes = null;
+        int cycle = 0;
 
         while (menuSelect != 7) {
 
@@ -415,6 +448,7 @@ public class Lane {
                     Lanes = new Lane[totalLanes];
                     int laneCount = 1;
 
+
                     for (int x = 0; x < V_street; x++) {
 
                         String vName = "V_street" + Integer.toString(laneCount);
@@ -422,7 +456,7 @@ public class Lane {
                         Lanes[x].setName(vName);
                         Lanes[x].setFlow(1);
                         Lanes[x].setCarProb(chanceCarV_street);
-                        Lanes[x].setLength(H_street + 20);
+                        Lanes[x].setLength(H_street + 20, V_street);
                         laneCount += 1;
                     }
                     laneCount = 1;
@@ -434,7 +468,7 @@ public class Lane {
                         Lanes[x].setName(hName);
                         Lanes[x].setFlow(3);
                         Lanes[x].setCarProb(chanceCarH_street);
-                        Lanes[x].setLength(V_street + 20);
+                        Lanes[x].setLength(V_street + 20, H_street);
                         laneCount += 1;
                     }
                     pressFive = true;
@@ -464,29 +498,30 @@ public class Lane {
 
                 for (int cyc = 0; cyc < cycleCount; cyc++) {
 
-                    // now it kows if it needs to build and does it, next -> moving
-                    // First stage is to move all existing cars second is to create
-                    // new cars in lanes.
 
                     for (int x = 0; x < totalLanes; x++) {
 
+                        Lanes[x].stopOrGo.plusDelayCount();
 
-//                    System.out.println(Lanes[x].getName());
-//                    System.out.println(Lanes[x].Cars.length);
-//
-//                    for (int y = 0; y < Lanes[x].Cars.length; y++) {
-//
-//                        if (Lanes[x].Cars[y] != null) {
-//
-//                            System.out.println(Lanes[x].Cars[y].isExists());
-//
-//                        }
-//                    }
+                        if (cycle % 8 == 0) {
+
+                            Lanes[x].changeLights();
+                        }
+
+                        if ((Lanes[x].stopOrGo.getGreen() == false) && (Lanes[x].stopOrGo.getAmberDelay() == Lanes[x].stopOrGo.getDelayCount())) {
+
+                            Lanes[x].stopOrGo.setGreen(true);
+                        }
+                    }
+
+
+                    for (int x = 0; x < totalLanes; x++) {
+
                         Lanes[x].moveCars(Lanes, x);
                         Lanes[x].bingCar();
                     }
-
-                    System.out.println(screenOut(Lanes, V_street, H_street));
+                    cycle += 1;
+                    System.out.println(screenOut(Lanes, V_street, H_street) + "Cycle:" + cycle);
                 }
             }
         }
