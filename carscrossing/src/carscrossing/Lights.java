@@ -9,14 +9,13 @@ package carscrossing;
  * @author Justin Jackson
  */
 
-
+// Lights need attributes and METHODS to RULE OVER cars!!!
 
 public class Lights {
-// Lights need MANY!! attributes and METHODS to RULE OVER cars!!!
+
     private boolean green=false;
     private int amberDelay=0;
     private int delayCount=10;
-    private static int time=0;
 
     int getDelayCount(){
         return delayCount;
@@ -41,22 +40,10 @@ public class Lights {
     // Method to set objects state.
     void setGreen (boolean value) {
         green = value;
-
-        // initialise delay
-        if (value==false){
-
-        }
     }
 
     //Method to get objects state.
     boolean getGreen (){
         return green;
     }
-
-    void setTime(){
-        ++time;
-    }
-
-
-
 }
