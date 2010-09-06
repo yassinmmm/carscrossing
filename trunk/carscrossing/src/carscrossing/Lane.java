@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author Pro
+ * @author Justin Jackson
  */
 public class Lane {
     //Lane needs definative direction for future builds.
@@ -133,7 +133,6 @@ public class Lane {
 
                             Lanes[x - 1].Cars[y + 1] = Cars[y];
                             Cars[y] = null;
-
                         }
                     }
                 }
@@ -154,13 +153,11 @@ public class Lane {
 
     public static String screenOut(Lane[] Lanes, int vValue, int hValue) {
 
-
         // this is going to be huge....challenge time :D
         String buildStringOut = "";
         String leftV = "          |";
         String rightV = "|          \n";
         int vCrossCount = hValue;
-
 
         // Need to construct each line individually stating with top-half
         // of vertical lanes.
@@ -207,12 +204,10 @@ public class Lane {
                     if (Lanes[x].Cars[y] != null) {
 
                         buildStringOut += "c";
-
                     } else {
                         buildStringOut += " ";
                     }
                 }
-
 
                 // Lights output for horizontal after lights if green
 
@@ -226,12 +221,10 @@ public class Lane {
                         if (Lanes[x].Cars[y] != null) {
 
                             buildStringOut += "c";
-
                         } else {
                             buildStringOut += " ";
                         }
                     }
-
                 }
 
                 // lights output for horizontal after lights if red
@@ -246,13 +239,19 @@ public class Lane {
                             if (Lanes[v].Cars[9 + vCrossCount] != null) {
 
                                 buildStringOut += "C";
+                            }
 
-                            } else {
+                            if (Lanes[x].Cars[10 + v] != null) {
+
+                                buildStringOut += "c";
+                            }
+
+                            if ((Lanes[v].Cars[9 + vCrossCount] == null) && (Lanes[x].Cars[10 + v] == null)) {
+
                                 buildStringOut += " ";
                             }
                         }
                     }
-
                 }
                 // next line is need to represent possible input of lights
                 // for opposite direction
@@ -264,7 +263,6 @@ public class Lane {
                     if (Lanes[x].Cars[y] != null) {
 
                         buildStringOut += "c";
-
                     } else {
                         buildStringOut += " ";
                     }
@@ -283,14 +281,12 @@ public class Lane {
                 if (Lanes[x].stopOrGo.getGreen() == false) {
 
                     buildStringOut += "-";
-
                 } else {
                     buildStringOut += " ";
                 }
             }
         }
         buildStringOut += "|----------\n";
-
 
         //bottom half of vertical construction
         for (int y = 9; y > -1; y--) {
@@ -307,12 +303,10 @@ public class Lane {
                         buildStringOut += "C";
                     } else {
                         buildStringOut += " ";
-
                     }
                 }
             }
             buildStringOut += rightV;
-
         }
         return buildStringOut;
     }
@@ -448,7 +442,6 @@ public class Lane {
                     Lanes = new Lane[totalLanes];
                     int laneCount = 1;
 
-
                     for (int x = 0; x < V_street; x++) {
 
                         String vName = "V_street" + Integer.toString(laneCount);
@@ -493,11 +486,13 @@ public class Lane {
                         }
                         System.out.println("Please enter a valid input value");
                     }
-
                 }
 
                 for (int cyc = 0; cyc < cycleCount; cyc++) {
 
+                    // Separate loop must be constructed for change of lights
+                    // for as serious errors could occur if a car changes to
+                    // a lane that is " in another time zone"
 
                     for (int x = 0; x < totalLanes; x++) {
 
@@ -513,7 +508,6 @@ public class Lane {
                             Lanes[x].stopOrGo.setGreen(true);
                         }
                     }
-
 
                     for (int x = 0; x < totalLanes; x++) {
 
