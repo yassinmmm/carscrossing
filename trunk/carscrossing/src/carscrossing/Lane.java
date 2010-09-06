@@ -151,6 +151,13 @@ public class Lane {
         }
     }
 
+    /**
+     * This function is a very large String concatenation
+     * @param Lanes - Passes in the reference to the Object array of Lanes
+     * @param vValue - Passes in the number of vertical lanes
+     * @param hValue - Passes in the number of horizontal lanes
+     * @return the finished concatenation String value
+     */
     public static String screenOut(Lane[] Lanes, int vValue, int hValue) {
 
         // this is going to be huge....challenge time :D
@@ -311,6 +318,10 @@ public class Lane {
         return buildStringOut;
     }
 
+    /**
+     * This is the main which has no initial arguments passed into it
+     * @param args
+     */
     public static void main(String[] args) {
 
         String Catch = "";

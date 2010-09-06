@@ -10,9 +10,17 @@ package carscrossing;
  */
 public class Car {
 
-public boolean exists = true;
+    /**
+     * This attribute while, unnecessary, i though would be good to keep
+     * as cars in future builds may aquire more attributes
+     */
+    public boolean exists = true;
 
-    public boolean isExists() {
+/**
+ *
+ * @return value of boolean variable 'exists'
+ */
+public boolean isExists() {
         return exists;
     }
 }
