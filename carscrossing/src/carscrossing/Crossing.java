@@ -14,16 +14,23 @@ import java.util.Scanner;
 public class Crossing {
 
 
+    /**
+     * This function is a very large String concatenation
+     * @param Lanes - Passes in the reference to the Object array of Lanes
+     * @param vValue - Passes in the number of vertical lanes
+     * @param hValue - Passes in the number of horizontal lanes
+     * @return the finished concatenation String value
+     */
+
+
     public static String screenOut(Lane[] Lanes, int vValue, int hValue) {
 
-        // this is going to be huge....challenge time :D
+
         String buildStringOut = "";
         String leftV = "          |";
         String rightV = "|          \n";
         int vCrossCount = hValue;
 
-        // Need to construct each line individually stating with top-half
-        // of vertical lanes.
         for (int y = hValue + 19; y > hValue + 9; y--) {
 
             buildStringOut += leftV;
@@ -43,27 +50,21 @@ public class Crossing {
             buildStringOut += rightV;
         }
 
-        // top of horizontal lanes has no lights as is only one way
         buildStringOut += "----------|";
 
-        // i couldn't find a more efficient way for this...
         for (int k = 0; k < vValue; k++) {
 
             buildStringOut += " ";
         }
 
         buildStringOut += "|----------\n";
-        // horizontal lanes construction
-        // loop cycle lanes[]
+
         for (int x = 0; x < Lanes.length; x++) {
 
-            // check for direction of lane
             if (Lanes[x].getFlow() == 3) {
 
-                // loop through cars array of horizontal lane up to lights
                 for (int y = 0; y < 10; y++) {
 
-                    // check for car
                     if (Lanes[x].Cars()[y] != null) {
 
                         buildStringOut += "c";
@@ -72,15 +73,12 @@ public class Crossing {
                     }
                 }
 
-                // Lights output for horizontal after lights if green
-
                 if (Lanes[x].stopOrGo().getGreen()) {
 
                     buildStringOut += " ";
 
                     for (int y = 10; y < 10 + vValue; y++) {
 
-                        // check for car
                         if (Lanes[x].Cars()[y] != null) {
 
                             buildStringOut += "c";
@@ -89,8 +87,6 @@ public class Crossing {
                         }
                     }
                 }
-
-                // lights output for horizontal after lights if red
 
                 if (!Lanes[x].stopOrGo().getGreen()) {
                     buildStringOut += "|";
@@ -116,13 +112,11 @@ public class Crossing {
                         }
                     }
                 }
-                // next line is need to represent possible input of lights
-                // for opposite direction
+
                 buildStringOut += " ";
-                // Horizontal lane after lights
+
                 for (int y = (10 + vValue); y < Lanes[x].Cars().length; y++) {
 
-                    // check for car
                     if (Lanes[x].Cars()[y] != null) {
 
                         buildStringOut += "c";
@@ -134,8 +128,7 @@ public class Crossing {
                 vCrossCount -= 1;
             }
         }
-        // build concatanation of bottom of horizontal lanes
-        // with lights included
+
         buildStringOut += "----------|";
         for (int x = 0; x < Lanes.length; x++) {
 
@@ -151,10 +144,8 @@ public class Crossing {
         }
         buildStringOut += "|----------\n";
 
-        //bottom half of vertical construction
         for (int y = 9; y > -1; y--) {
 
-            // could be made into a function
             buildStringOut += leftV;
 
             for (int x = 0; x < Lanes.length; x++) {
@@ -174,7 +165,10 @@ public class Crossing {
         return buildStringOut;
     }
 
-
+    /**
+     * This is the main which has no initial arguments passed into it
+     * @param args
+     */
 
     public static void main(String[] args) {
 
@@ -190,8 +184,6 @@ public class Crossing {
         int cycle = 0;
 
         while (menuSelect != 7) {
-
-            // I assumed option 7 was nessesary to add to the menu.
 
             System.out.println("=== MENU ===\n1. Set Number of horizontal lanes"
                     + " (H-street) [min 1, max 3]\n2. Set Number of vertical lanes"
@@ -219,7 +211,6 @@ public class Crossing {
 
                 while (menuSelect == 1) {
 
-                    // Get number of horizontal streets as H_street from user.
                     System.out.println("Please enter number of horizontal lanes[min 1, max 3]: ");
                     Catch = keyboard.next();
 
@@ -240,7 +231,6 @@ public class Crossing {
 
                 while (menuSelect == 2) {
 
-                    // Get number of vertical streets as H_street from user.
                     System.out.println("Please enter number of vertical lanes[min 1, max 4]: ");
                     Catch = keyboard.next();
                     try {
@@ -260,7 +250,6 @@ public class Crossing {
 
                 while (menuSelect == 3) {
 
-                    // Get value for random calculation from user.
                     System.out.println("Please enter a value for the"
                             + "Probability of a car entering "
                             + "a horizontal street [min 0, max 1]: ");
@@ -281,7 +270,7 @@ public class Crossing {
             if (menuSelect == 4) {
 
                 while (menuSelect == 4) {
-                    // Get value for random calculation from user.
+
                     System.out.println("Please enter a value for the"
                             + "Probability of a car entering "
                             + "a vertical street [min 0, max 1]: ");
@@ -299,9 +288,7 @@ public class Crossing {
                 }
             }
             if ((menuSelect == 5) || (menuSelect == 6)) {
-                // I assume that one cycle refers to a small point in time
-                // in wich a car can be generated by a lane or
-                // move to the next available position
+
                 if (pressFive == false) {
                     totalLanes = (H_street + V_street);
                     Lanes = new Lane[totalLanes];
@@ -354,10 +341,6 @@ public class Crossing {
                 }
 
                 for (int cyc = 0; cyc < cycleCount; cyc++) {
-
-                    // Separate loop must be constructed for change of lights
-                    // for serious errors could occur if a car changes to
-                    // a lane that is "in another time zone"
 
                     for (int x = 0; x < totalLanes; x++) {
 

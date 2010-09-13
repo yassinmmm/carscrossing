@@ -9,8 +9,6 @@ package carscrossing;
  * @author Justin Jackson
  */
 
-// Lights need attributes and METHODS to RULE OVER cars!!!
-
 public class Lights {
 
     private boolean green=false;
@@ -24,6 +22,11 @@ public class Lights {
     void resetDelayCount() {
         delayCount=0;
     }
+
+    /**
+     * When called this method adds 1 to delay count
+     *
+     */
 
     void plusDelayCount(){
         ++delayCount;
