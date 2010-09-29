@@ -23,6 +23,8 @@ public class CarsDisplay extends JFrame{
 
         setPreferredSize(new Dimension(800, 800));
 
+        //i need a miracle
+
 
     }
 
