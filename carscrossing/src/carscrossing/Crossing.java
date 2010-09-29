@@ -5,6 +5,7 @@
 
 package carscrossing;
 
+import View.CarsCrossingFrame;
 import java.util.Scanner;
 
 /**
@@ -364,6 +365,9 @@ public class Crossing {
                     }
                     cycle += 1;
                     System.out.println(screenOut(Lanes, V_street, H_street) + "Cycle:" + cycle);
+
+                    
+
                 }
             }
         }
