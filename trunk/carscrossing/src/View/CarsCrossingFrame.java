@@ -54,5 +54,7 @@ public class CarsCrossingFrame extends JFrame {
             }
         });
 
+        //maybe i had to add stuff
+
     }
 }
