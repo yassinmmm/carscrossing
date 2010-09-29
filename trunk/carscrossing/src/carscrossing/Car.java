@@ -12,9 +12,10 @@ public class Car {
 
     /**
      * This attribute while, unnecessary, i though would be good to keep
-     * as cars in future builds may aquire more attributes
+     * as cars in future builds may aquire more attributes <-- i luv me :)
      */
     public boolean exists = true;
+    private int x,y,xOff,yOff;
 
 /**
  *
